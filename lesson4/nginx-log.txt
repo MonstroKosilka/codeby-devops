@@ -1,0 +1,67 @@
+Script started on 2025-09-26 14:12:41+01:00 [TERM="xterm-256color" TTY="/dev/pts/0" COLUMNS="158" LINES="43"]
+[?2004h]0;mint@devopslesson4: ~/Documents/codeby-devops/lesson4[01;32mmint@devopslesson4[00m:[01;34m~/Documents/codeby-devops/lesson4[00m$ [7msudo systemctl status nginx[27msudo systemctl status nginx
+[?2004l[sudo] password for mint: ****    
+[?1h=[0;1;32m●[0m nginx.service - A high performance web server and a reverse proxy server[m
+     Loaded: loaded (]8;;file://devopslesson4/etc/systemd/system/nginx.service/etc/systemd/system/nginx.service]8;;; [0;1;32menabled[0m; preset: [0;1;32menabled[0m)[m
+     Active: [0;1;32mactive (running)[0m since Fri 2025-09-26 14:12:22 BST; 28s ago[m
+       Docs: ]8;;man:nginx(8)man:nginx(8)]8;;[m
+    Process: 12107 ExecStartPre=/usr/sbin/nginx -t -q -g daemon on; master_process on; (code=exited, status=0/SUCCESS)[m
+    Process: 12110 ExecStart=/usr/sbin/nginx -g daemon on; master_process on; (code=exited, status=0/SUCCESS)[m
+   Main PID: 12111 (nginx)[m
+      Tasks: 9 (limit: 9368)[m
+     Memory: 6.3M (peak: 7.1M)[m
+        CPU: 28ms[m
+     CGroup: /system.slice/nginx.service[m
+             ├─[0;38;5;245m12111 "nginx: master process /usr/sbin/nginx -g daemon on; master_process on;"[0m[m
+             ├─[0;38;5;245m12112 "nginx: worker process"[0m[m
+             ├─[0;38;5;245m12113 "nginx: worker process"[0m[m
+             ├─[0;38;5;245m12114 "nginx: worker process"[0m[m
+             ├─[0;38;5;245m12115 "nginx: worker process"[0m[m
+             ├─[0;38;5;245m12116 "nginx: worker process"[0m[m
+             ├─[0;38;5;245m12117 "nginx: worker process"[0m[m
+             ├─[0;38;5;245m12118 "nginx: worker process"[0m[m
+             └─[0;38;5;245m12119 "nginx: worker process"[0m[m
+[m
+Sep 26 14:12:22 devopslesson4 systemd[1]: Starting nginx.service - A high performance web server and a reverse proxy server...[m
+Sep 26 14:12:22 devopslesson4 systemd[1]: Started nginx.service - A high performance web server and a reverse proxy server.[m
+[K[?1l>[?2004h]0;mint@devopslesson4: ~/Documents/codeby-devops/lesson4[01;32mmint@devopslesson4[00m:[01;34m~/Documents/codeby-devops/lesson4[00m$ [7msudo systemctl is-enabled nginx[27msudo systemctl is-enabled nginx
+[?2004lenabled
+[?2004h]0;mint@devopslesson4: ~/Documents/codeby-devops/lesson4[01;32mmint@devopslesson4[00m:[01;34m~/Documents/codeby-devops/lesson4[00m$ [7mnginx -v[27mnginx -v
+[?2004lnginx version: nginx/1.24.0 (Ubuntu)
+[?2004h]0;mint@devopslesson4: ~/Documents/codeby-devops/lesson4[01;32mmint@devopslesson4[00m:[01;34m~/Documents/codeby-devops/lesson4[00m$ [7msudo systemctl cat nginx.service[27msudo systemctl cat nginx.service
+[?2004l[?1h=[0;1;34m# ]8;;file://devopslesson4/etc/systemd/system/nginx.service/etc/systemd/system/nginx.service]8;;[0m[m
+[0;1;38;5;245m# Stop dance for nginx[0m[m
+[0;1;38;5;245m# =======================[0m[m
+[0;1;38;5;245m#[0m[m
+[0;1;38;5;245m# ExecStop sends SIGQUIT (graceful stop) to the nginx process.[0m[m
+[0;1;38;5;245m# If, after 5s (--retry QUIT/5) nginx is still running, systemd takes control[0m[m
+[0;1;38;5;245m# and sends SIGTERM (fast shutdown) to the main process.[0m[m
+[0;1;38;5;245m# After another 5s (TimeoutStopSec=5), and if nginx is alive, systemd sends[0m[m
+[0;1;38;5;245m# SIGKILL to all the remaining processes in the process group (KillMode=mixed).[0m[m
+[0;1;38;5;245m#[0m[m
+[0;1;38;5;245m# nginx signals reference doc:[0m[m
+[0;1;38;5;245m# http://nginx.org/en/docs/control.html[0m[m
+[0;1;38;5;245m#[0m[m
+[0;1;36m[Unit][0m[m
+Description=A high performance web server and a reverse proxy server[m
+Documentation=man:nginx(8)[m
+After=network-online.target remote-fs.target nss-lookup.target[m
+Wants=network-online.target[m
+ConditionFileIsExecutable=/usr/sbin/nginx[m
+[0;1;38;5;245m[0m[m
+[0;1;36m[Service][0m[m
+Type=forking[m
+PIDFile=/run/nginx.pid[m
+ExecStartPre=/usr/sbin/nginx -t -q -g 'daemon on; master_process on;'[m
+ExecStart=/usr/sbin/nginx -g 'daemon on; master_process on;'[m
+ExecReload=/usr/sbin/nginx -g 'daemon on; master_process on;' -s reload[m
+ExecStop=-/sbin/start-stop-daemon --quiet --stop --retry QUIT/5 --pidfile /run/nginx.pid[m
+TimeoutStopSec=5[m
+KillMode=mixed[m
+[0;1;38;5;245m[0m[m
+[0;1;36m[Install][0m[m
+WantedBy=multi-user.target[m
+[K[?1l>[?2004h]0;mint@devopslesson4: ~/Documents/codeby-devops/lesson4[01;32mmint@devopslesson4[00m:[01;34m~/Documents/codeby-devops/lesson4[00m$ exit
+[?2004lexit
+
+Script done on 2025-09-26 14:13:19+01:00 [COMMAND_EXIT_CODE="0"]

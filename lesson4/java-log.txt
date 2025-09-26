@@ -1,0 +1,25 @@
+Script started on 2025-09-26 14:09:39+01:00 [TERM="xterm-256color" TTY="/dev/pts/0" COLUMNS="158" LINES="43"]
+[?2004h]0;mint@devopslesson4: ~/Documents/codeby-devops/lesson4[01;32mmint@devopslesson4[00m:[01;34m~/Documents/codeby-devops/lesson4[00m$ exitkill -9 8922[7Ptop &[K[K[K[K[Kjava -verio[K[Ksion
+[?2004ljava version "21.0.8" 2025-07-15 LTS
+Java(TM) SE Runtime Environment (build 21.0.8+12-LTS-250)
+Java HotSpot(TM) 64-Bit Server VM (build 21.0.8+12-LTS-250, mixed mode, sharing)
+[?2004h]0;mint@devopslesson4: ~/Documents/codeby-devops/lesson4[01;32mmint@devopslesson4[00m:[01;34m~/Documents/codeby-devops/lesson4[00m$ sudo update-alternatives --config java
+[?2004l[sudo] password for mint: ****    
+There are 2 choices for the alternative java (providing /usr/bin/java).
+
+  Selection    Path                                         Priority   Status
+------------------------------------------------------------
+  0            /opt/jdk-21.0.8/bin/java                      2         auto mode
+* 1            /opt/jdk-21.0.8/bin/java                      2         manual mode
+  2            /usr/lib/jvm/java-11-openjdk-amd64/bin/java   1         manual mode
+
+Press <enter> to keep the current choice[*], or type selection number: 2
+update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/java to provide /usr/bin/java (java) in manual mode
+[?2004h]0;mint@devopslesson4: ~/Documents/codeby-devops/lesson4[01;32mmint@devopslesson4[00m:[01;34m~/Documents/codeby-devops/lesson4[00m$ sudo update-alternatives --config java[25Pjava -version
+[?2004lopenjdk version "11.0.28" 2025-07-15
+OpenJDK Runtime Environment (build 11.0.28+6-post-Ubuntu-1ubuntu124.04.1)
+OpenJDK 64-Bit Server VM (build 11.0.28+6-post-Ubuntu-1ubuntu124.04.1, mixed mode, sharing)
+[?2004h]0;mint@devopslesson4: ~/Documents/codeby-devops/lesson4[01;32mmint@devopslesson4[00m:[01;34m~/Documents/codeby-devops/lesson4[00m$ exit
+[?2004lexit
+
+Script done on 2025-09-26 14:10:40+01:00 [COMMAND_EXIT_CODE="0"]
