@@ -1,3 +1,7 @@
-# codeby-devops
-Codeby DevOps
-Redacted in lesson3 branch
+# Курс "Основы DevOps" Codeby Academy
+
+1. Методологии и фреймворки разработки  
+2. Основы DevOps  
+3. Знакомство с Git  
+4. Работа с операционной системой Linux  
+5. Компьютерные сети 
