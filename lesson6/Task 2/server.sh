@@ -1,0 +1,1 @@
+ssh -i /vagrant/.vagrant/machines/server/virtualbox/private_key vagrant@192.168.21.100
