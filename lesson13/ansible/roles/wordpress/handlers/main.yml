@@ -1,0 +1,12 @@
+---
+- name: Restart Apache
+  service:
+    name: "{{ apache_service_name[ansible_os_family] }}"
+    state: restarted
+  become: true
+
+- name: Reload Apache
+  service:
+    name: "{{ apache_service_name[ansible_os_family] }}"
+    state: reloaded
+  become: true

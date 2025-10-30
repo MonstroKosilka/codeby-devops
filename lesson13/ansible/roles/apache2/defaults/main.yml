@@ -1,0 +1,12 @@
+---
+# Стандартные зависимости для apache
+apache_service_name:
+  Debian: apache2
+  RedHat: httpd
+
+apache_package_name:
+  Debian: 
+    - apache2
+  RedHat: 
+    - httpd
+    
