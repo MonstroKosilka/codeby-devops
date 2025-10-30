@@ -1,0 +1,26 @@
+---
+# Необходимые к установке пакеты php
+
+ubuntu_packages:
+  - php
+  - php-mysql
+  - php-curl
+  - php-gd
+  - php-mbstring
+  - php-xml
+  - php-xmlrpc
+  - php-soap
+  - php-intl
+  - php-zip
+
+centos_packages:
+  - php
+  - php-mysqlnd
+  - php-curl
+  - php-gd
+  - php-mbstring
+  - php-xml
+  - php-soap
+  - php-intl
+  - php-zip
+  

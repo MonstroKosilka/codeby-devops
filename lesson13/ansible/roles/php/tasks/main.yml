@@ -1,0 +1,15 @@
+---
+- name: PHP | Install on Debian
+  package:
+    name: '{{ ubuntu_packages }}'
+    update_cache: true
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: PHP | Install on RedHat
+  package:
+    name: '{{ centos_packages }}'
+    update_cache: true
+    state: present
+  when: ansible_os_family == "RedHat"
+  

@@ -1,0 +1,5 @@
+---
+- include_tasks: install_mysql.yml
+- include_tasks: check_instalation.yml
+- include_tasks: pymysql_install.yml
+- include_tasks: database_configure.yml
