@@ -13,3 +13,4 @@
 11. Разработка BASH-сценариев
 12. Знакомство с Ansible
 13. Роли Ansible
+14. Infrastructure as code. Знакомство с Terraform
