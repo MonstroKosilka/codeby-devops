@@ -1,0 +1,12 @@
+server {
+    listen 8080;
+
+    root /var/www/lesson14/html;
+    index index_private.html index_private.htm;
+
+    server_name lesson14 www.lesson14;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}

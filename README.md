@@ -12,3 +12,5 @@
 10. BASH - Cценарии
 11. Разработка BASH-сценариев
 12. Знакомство с Ansible
+
+14. Infrastructure as code. Знакомство с Terraform
