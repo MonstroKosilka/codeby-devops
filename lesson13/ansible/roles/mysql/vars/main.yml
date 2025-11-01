@@ -1,0 +1,11 @@
+---
+
+mysql_packages:
+  Debian:
+    - mysql-server
+  RedHat:
+    - mariadb-server
+
+mysql_service_name:
+  Debian: mysql
+  RedHat: mariadb

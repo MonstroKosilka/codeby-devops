@@ -1,0 +1,5 @@
+---
+# Стандартное для mysql
+mysql_db_name: wordpress
+mysql_user: UserWP
+mysql_password: UserWP

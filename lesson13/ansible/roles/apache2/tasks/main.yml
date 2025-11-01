@@ -1,0 +1,21 @@
+---
+# Установка apache2 на виртуальные машины
+
+- name: Check Linux OS family
+  debug:
+    var: ansible_os_family 
+
+- name: Apache | Install
+  package:
+    name: '{{ apache_package_name[ansible_os_family] }}'
+    state: present
+    update_cache: yes
+  become: true
+
+- name: Apache | Check start
+  service:
+    name: '{{ apache_service_name[ansible_os_family] }}'
+    state: started
+    enabled: true
+  become: true
+  

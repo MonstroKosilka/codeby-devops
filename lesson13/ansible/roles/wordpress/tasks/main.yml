@@ -1,0 +1,4 @@
+---
+
+- include_tasks: install_wordpress.yml
+- include_tasks: configure_wordpress.yml
