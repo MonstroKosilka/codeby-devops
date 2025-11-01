@@ -1,0 +1,9 @@
+---
+
+- name: MySQL | Check working
+  become: true
+  service:
+    name: '{{ mysql_service_name[ansible_os_family] }}'
+    state: started
+    enabled: true
+  notify: Restart MySQL
