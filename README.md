@@ -16,3 +16,4 @@
 14. Infrastructure as code. Знакомство с Terraform
 15. Infrastructure as code. Модули в Terraform
 16. Контейнеризация
+17. Работа с Docker
