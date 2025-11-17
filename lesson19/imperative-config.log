@@ -1,0 +1,27 @@
+Script started on 2025-11-17 22:17:32+03:00 [TERM="xterm-256color" TTY="/dev/pts/0" COLUMNS="163" LINES="54"]
+[?2004h]0;ubuntu@ubuntu: ~[01;32mubuntu@ubuntu[00m:[01;34m~[00m$ cat lesson19/ngninx-pod-imperative.yaml 
+[?2004lapiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod-imperative
+  namespace: codeby
+spec:
+  containers:
+  - name: nginx-container
+    image: nginx
+    ports:
+    - containerPort: 80[?2004h]0;ubuntu@ubuntu: ~[01;32mubuntu@ubuntu[00m:[01;34m~[00m$ ^C[?2004l[?2004h[?2004l
+[?2004h]0;ubuntu@ubuntu: ~[01;32mubuntu@ubuntu[00m:[01;34m~[00m$ kubectl create -f lesson19/imperative[K[K[K[K[K[K[K[K[K[Kngninx-pod-imperative.yaml 
+[?2004lpod/nginx-pod-imperative created
+[?2004h]0;ubuntu@ubuntu: ~[01;32mubuntu@ubuntu[00m:[01;34m~[00m$ kubectl get pod
+[?2004lNAME                   READY   STATUS    RESTARTS   AGE
+nginx-pod              1/1     Running   0          11m
+nginx-pod-imperative   1/1     Running   0          9s
+[?2004h]0;ubuntu@ubuntu: ~[01;32mubuntu@ubuntu[00m:[01;34m~[00m$ [K]0;ubuntu@ubuntu: ~[01;32mubuntu@ubuntu[00m:[01;34m~[00m$ [K]0;ubuntu@ubuntu: ~[01;32mubuntu@ubuntu[00m:[01;34m~[00m$ [K]0;ubuntu@ubuntu: ~[01;32mubuntu@ubuntu[00m:[01;34m~[00m$ [K]0;ubuntu@ubuntu: ~[01;32mubuntu@ubuntu[00m:[01;34m~[00m$ [7mkubectl port-forward pods/nginx-pod-imperative 8002:80 -n codeby[27m [A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Ckubectl port-forward pods/nginx-pod-imperative 8002:80 -n codeby [A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Ky
+[?2004lForwarding from 127.0.0.1:8002 -> 80
+Forwarding from [::1]:8002 -> 80
+Handling connection for 8002
+^C[?2004h]0;ubuntu@ubuntu: ~[01;32mubuntu@ubuntu[00m:[01;34m~[00m$ exit
+[?2004lexit
+
+Script done on 2025-11-17 22:22:44+03:00 [COMMAND_EXIT_CODE="0"]

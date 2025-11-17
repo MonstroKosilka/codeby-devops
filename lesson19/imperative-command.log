@@ -1,0 +1,25 @@
+Script started on 2025-11-17 22:06:13+03:00 [TERM="xterm-256color" TTY="/dev/pts/0" COLUMNS="163" LINES="54"]
+[?2004h]0;ubuntu@ubuntu: ~[01;32mubuntu@ubuntu[00m:[01;34m~[00m$ kubectl get namespace
+[?2004lNAME              STATUS   AGE
+codeby            Active   15m
+default           Active   16m
+kube-node-lease   Active   16m
+kube-public       Active   16m
+kube-system       Active   16m
+[?2004h]0;ubuntu@ubuntu: ~[01;32mubuntu@ubuntu[00m:[01;34m~[00m$ [7mkubectl run nginx-pod --image=nginx --namespace=codeby[27m[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Ckubectl run nginx-pod --image=nginx --namespace=codeby
+[?2004lpod/nginx-pod created
+[?2004h]0;ubuntu@ubuntu: ~[01;32mubuntu@ubuntu[00m:[01;34m~[00m$ kubectl get pod
+[?2004lNo resources found in default namespace.
+[?2004h]0;ubuntu@ubuntu: ~[01;32mubuntu@ubuntu[00m:[01;34m~[00m$ kubectl get pod --namespace codeby
+[?2004lNAME        READY   STATUS    RESTARTS   AGE
+nginx-pod   1/1     Running   0          16s
+[?2004h]0;ubuntu@ubuntu: ~[01;32mubuntu@ubuntu[00m:[01;34m~[00m$ kubectl port-forward nginx-pod 8001:80
+[?2004lError from server (NotFound): pods "nginx-pod" not found
+[?2004h]0;ubuntu@ubuntu: ~[01;32mubuntu@ubuntu[00m:[01;34m~[00m$ kubectl port-forward nginx-pod 8001:80 --namespace codeby
+[?2004lForwarding from 127.0.0.1:8001 -> 80
+Forwarding from [::1]:8001 -> 80
+Handling connection for 8001
+^C[?2004h]0;ubuntu@ubuntu: ~[01;32mubuntu@ubuntu[00m:[01;34m~[00m$ exit
+[?2004lexit
+
+Script done on 2025-11-17 22:09:15+03:00 [COMMAND_EXIT_CODE="0"]
