@@ -1,0 +1,33 @@
+Script started on 2025-11-17 22:29:56+03:00 [TERM="xterm-256color" TTY="/dev/pts/0" COLUMNS="81" LINES="54"]
+[?2004h]0;ubuntu@ubuntu: ~[01;32mubuntu@ubuntu[00m:[01;34m~[00m$ cat lesson19/nginx-pod-declarative.yaml 
+[?2004lapiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod-declarative
+  namespace: codeby
+  labels:
+    app: nginx
+spec:
+  containers:
+  - name: nginx-container
+    image: nginx:latest
+    ports:
+    - containerPort: 80[?2004h]0;ubuntu@ubuntu: ~[01;32mubuntu@ubuntu[00m:[01;34m~[00m$ ^C[?2004l[?2004h[?2004l
+[?2004h]0;ubuntu@ubuntu: ~[01;32mubuntu@ubuntu[00m:[01;34m~[00m$ kubectl apply -f lesson19/ngo[Kinx-pod-declarative.yaml 
+[?2004lpod/nginx-pod-declarative created
+[?2004h]0;ubuntu@ubuntu: ~[01;32mubuntu@ubuntu[00m:[01;34m~[00m$ kubectl get pod
+[?2004lNAME                    READY   STATUS    RESTARTS   AGE
+nginx-pod               1/1     Running   0          23m
+nginx-pod-declarative   1/1     Running   0          6s
+nginx-pod-imperative    1/1     Running   0          12m
+[?2004h]0;ubuntu@ubuntu: ~[01;32mubuntu@ubuntu[00m:[01;34m~[00m$ kubectl port-forward 8003:80
+[?2004lerror: TYPE/NAME and list of ports are required for port-forward
+See 'kubectl port-forward -h' for help and examples
+[?2004h]0;ubuntu@ubuntu: ~[01;32mubuntu@ubuntu[00m:[01;34m~[00m$ kubectl port-forward 8003:80[C[C[C[C[C[Cn8003:80g8003:80i8003:80n8003:80x8003:80-8003:80p8003:80o8003:80d8003:80-8003:80d8003:80e8003:80c8003:80l8003:80a8003:80r8003:80a8003:80t8003:80i8003:80v8003:80e8003:80 8003:80
+[?2004lForwarding from 127.0.0.1:8003 -> 80
+Forwarding from [::1]:8003 -> 80
+Handling connection for 8003
+^C[?2004h]0;ubuntu@ubuntu: ~[01;32mubuntu@ubuntu[00m:[01;34m~[00m$ exit
+[?2004lexit
+
+Script done on 2025-11-17 22:32:30+03:00 [COMMAND_EXIT_CODE="0"]
