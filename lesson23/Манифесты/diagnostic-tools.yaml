@@ -48,7 +48,7 @@ spec:
     args:
     - -c
     - |
-      echo "Начинаю мониторинг подов в namespace wordpress-namespace..."
+      echo "Начинаю мониторинг подов в namespace dev..."
       while true; do
         echo "=== Обнаруженные поды Wordpress в $(date) ==="
         kubectl get pods -n dev -l app=wordpress -owide
