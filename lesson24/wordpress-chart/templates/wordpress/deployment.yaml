@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.wordpress.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.wordpress.replicas }}
+  selector:
+    matchLabels:
+      app: wordpress
+  template:
+    metadata:
+      labels:
+        app: wordpress
+    spec:
+      containers:
+        - name: wordpress
+          image: {{ .Values.wordpress.image }}
+          env:
+            - name: WORDPRESS_DB_HOST
+              value: "mysql:3306"
+            - name: WORDPRESS_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.wordpress.secretName }}
+                  key: user
+            - name: WORDPRESS_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.wordpress.secretName }}
+                  key: password
+            - name: WORDPRESS_DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.wordpress.congifName }}
+                  key: database
+          ports:
+            - containerPort: {{ .Values.wordpress.port }}
+          volumeMounts:
+            - name: wordpress-persistent-storage
+              mountPath: /var/www/html
+          resources:
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+      volumes:
+        - name: wordpress-persistent-storage
+          persistentVolumeClaim:
+            claimName: {{ .Values.wordpress.claimName }}
