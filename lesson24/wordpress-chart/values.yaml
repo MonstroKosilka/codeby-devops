@@ -1,0 +1,62 @@
+namespace: dev
+
+# StorageClass
+StorageClass:
+  name: local-storage
+
+# PV
+PV:
+  storage: 1Gi
+  path: /data
+  node1: minikube
+  node2: minikube-m02
+
+# MySQL
+mysql:
+  name: mysql
+  image: mysql:latest
+  replicas: 1
+  port: 3306
+  claimName: mysql-pv-claim
+  secretName: mysql-secret
+  rootPassword: rootpassword                
+  database: wordpress                    
+  user: wordpress                         
+  password: wordpresspassword
+
+# WordPress
+wordpress:
+  name: wordpress
+  image: wordpress:latest
+  secretName: wordpress-secret
+  congifName: wordpress-config
+  user: wordpress                         
+  password: wordpresspassword
+  database: wordpress
+  port: 80
+  nodePort: 30080
+  claimName: wordpress-pv-claim
+  replicas: 1
+
+  # HPA
+  hpa:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 50
+
+# Ingress
+ingress:
+  enabled: true                          
+  host: wordpress.local     
+  className: nginx             
+
+
+# Resource
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
