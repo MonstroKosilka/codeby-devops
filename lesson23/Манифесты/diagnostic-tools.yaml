@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: diagnostic-tool
+  namespace: dev
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1 
+kind: Role 
+metadata:
+  name: pod-reader-role
+  namespace: dev
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch"]
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: diagnostic-pod-reader
+  namespace: dev
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: pod-reader-role
+subjects:
+- kind: ServiceAccount
+  name: diagnostic-tool
+  namespace: dev
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: diagnostic-tool-pod
+  namespace: dev
+spec:
+  serviceAccountName: diagnostic-tool
+  containers:
+  - name: diagnostic-container
+    image: bitnami/kubectl:latest
+    command: ["/bin/sh"]
+    args:
+    - -c
+    - |
+      echo "Начинаю мониторинг подов в namespace dev..."
+      while true; do
+        echo "=== Обнаруженные поды Wordpress в $(date) ==="
+        kubectl get pods -n dev -l app=wordpress -owide
+        echo "============================================="
+        sleep 30
+      done
