@@ -24,3 +24,4 @@
 22. Горизонтальное и вертикальное масштабирование в Kubernetes
 23. Безопасность в Kubernetes
 24. Helm
+25. Continuous Integration
