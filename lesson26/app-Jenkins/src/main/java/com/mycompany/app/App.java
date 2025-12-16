@@ -1,7 +1,7 @@
 package com.mycompany.app;
 
 /**
- * Hello Jenkins!
+ * Hello Jenkins! 
  */
 public class App {
 
