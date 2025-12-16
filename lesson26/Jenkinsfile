@@ -68,7 +68,9 @@ pipeline {
                         }
 
                         stage('Deploy') {
-                            echo "Hello World! APP SUCCESFULY DEPLOYED"
+                            steps {
+                                echo "Hello World! APP SUCCESFULY DEPLOYED"
+                            }                            
                         }
                     }
                 }
