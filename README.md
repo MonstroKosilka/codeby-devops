@@ -25,3 +25,5 @@
 23. Безопасность в Kubernetes
 24. Helm
 25. Continuous Integration
+
+27. SonarQube
