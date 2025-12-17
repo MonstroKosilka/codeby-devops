@@ -1,0 +1,151 @@
+pipeline {
+    agent any
+    tools {
+        maven 'maven-3'
+    }
+
+    stages {
+
+        // Находим список приложений, в которых у нас происходят изменения.
+        stage('Detect Changes in target apps') {
+            steps {
+                script {
+                    // Получаем список изменённых файлов
+                    changedFiles = sh(
+                        script: "git diff --name-only HEAD~1 HEAD",
+                        returnStdout: true
+                    ).trim().split('\n')
+
+                    echo "Changed files: ${changedFiles}"
+
+                    // Определяем какие приложения изменены
+                    apps = [
+                        "app-World",
+                        "app-Jenkins",
+                        "app-Devops"
+                    ]
+
+                    changedApps = []
+
+                    for (app in apps) {
+                        if (changedFiles.any { it.startsWith("lesson26/${app}/") }) {
+                            changedApps << app
+                        }
+                    }
+
+                    echo "Changed apps: ${changedApps}"
+                }
+            }
+        }
+
+        // Приступаем к сборке, тестированию и развертыванию для приложений, где изменения произошли.
+        stage('Build/Test/Deploy Parallel') {
+            parallel {
+                // Этап сборки Hello World! APP
+                stage('Hello World! APP') {
+                    when {
+                        expression { return changedApps.contains("app-World") }
+                    }
+                    stages{
+                        stage('Build') {
+                            steps {
+                                dir('lesson26/app-World') {
+                                    sh 'mvn -B -DskipTests clean package'
+                                }
+                            }
+                        }
+
+                        stage('Test') {
+                            steps {
+                                dir('lesson26/app-World') {
+                                    sh 'mvn test'
+                                }
+                            }
+                            post {
+                                always {
+                                    junit "lesson26/app-World/target/surefire-reports/*.xml"
+                                }
+                            }
+                        }
+
+                        stage('Deploy') {
+                            steps {
+                                echo "Hello World! APP SUCCESFULY DEPLOYED"
+                            }                            
+                        }
+                    }
+                }
+
+                // Этап сборки Hello Jenkins! APP
+                stage('Hello Jenkins! APP') {
+                    when {
+                        expression { return changedApps.contains("app-Jenkins") }
+                    }
+                    stages{
+                        stage('Build') {
+                            steps {
+                                dir('lesson26/app-Jenkins') {
+                                    sh 'mvn -B -DskipTests clean package'
+                                }
+                            }
+                        }
+
+                        stage('Test') {
+                            steps {
+                                dir('lesson26/app-Jenkins') {
+                                    sh 'mvn test'
+                                }
+                            }
+                            post {
+                                always {
+                                    junit "lesson26/app-Jenkins/target/surefire-reports/*.xml"
+                                }
+                            }
+                        }
+
+                        stage('Deploy') {
+                            steps {
+                                echo "Hello Jenkins! APP SUCCESFULY DEPLOYED"
+                            }                            
+                        }
+                    }
+                }
+
+                // Этап сборки Hello Devops! APP
+                stage('Hello Devops! APP') {
+                    when {
+                        expression { return changedApps.contains("app-Devops") }
+                    }
+                    stages{
+                        stage('Build') {
+                            steps {
+                                dir('lesson26/app-Devops') {
+                                    sh 'mvn -B -DskipTests clean package'
+                                }
+                            }
+                        }
+
+                        stage('Test') {
+                            steps {
+                                dir('lesson26/app-Devops') {
+                                    sh 'mvn test'
+                                }
+                            }
+                            post {
+                                always {
+                                    junit "lesson26/app-Devops/target/surefire-reports/*.xml"
+                                }
+                            }
+                        }
+
+                        stage('Deploy') {
+                            steps {
+                                echo "Hello Devops! APP SUCCESFULY DEPLOYED"
+                            }                            
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
