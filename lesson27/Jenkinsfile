@@ -28,7 +28,7 @@ pipeline {
                     changedApps = []
 
                     for (app in apps) {
-                        if (changedFiles.any { it.startsWith("lesson26/${app}/") }) {
+                        if (changedFiles.any { it.startsWith("lesson27/${app}/") }) {
                             changedApps << app
                         }
                     }
@@ -47,9 +47,28 @@ pipeline {
                         expression { return changedApps.contains("app-World") }
                     }
                     stages{
+                        // SonarQube анализирует код приложения
+                        stage('SonarQube Analysis') {
+                            steps {
+                                dir('lesson27/app-World') {
+                                    withSonarQubeEnv(credentialsId: 'sonar', installationName: 'SonarServer') {
+                                        sh "mvn clean verify sonar:sonar -Dsonar.projectKey=maven -Dsonar.projectName='maven'"
+                                    } 
+                                }
+                            }
+                        }
+
+                        // Quality Gate
+                        stage('SonarQube Quality Gate') {
+                            steps {
+                                sleep 60
+                                waitForQualityGate abortPipeline: true
+                            }
+                        }
+
                         stage('Build') {
                             steps {
-                                dir('lesson26/app-World') {
+                                dir('lesson27/app-World') {
                                     sh 'mvn -B -DskipTests clean package'
                                 }
                             }
@@ -57,13 +76,13 @@ pipeline {
 
                         stage('Test') {
                             steps {
-                                dir('lesson26/app-World') {
+                                dir('lesson27/app-World') {
                                     sh 'mvn test'
                                 }
                             }
                             post {
                                 always {
-                                    junit "lesson26/app-World/target/surefire-reports/*.xml"
+                                    junit "lesson27/app-World/target/surefire-reports/*.xml"
                                 }
                             }
                         }
@@ -82,9 +101,28 @@ pipeline {
                         expression { return changedApps.contains("app-Jenkins") }
                     }
                     stages{
+                        // SonarQube анализирует код приложения
+                        stage('SonarQube Analysis') {
+                            steps {
+                                dir('lesson27/app-Jenkins') {
+                                    withSonarQubeEnv(credentialsId: 'sonar', installationName: 'SonarServer') {
+                                        sh "mvn clean verify sonar:sonar -Dsonar.projectKey=maven -Dsonar.projectName='maven'"
+                                    } 
+                                }
+                            }
+                        }
+
+                        // Quality Gate
+                        stage('SonarQube Quality Gate') {
+                            steps {
+                                sleep 60
+                                waitForQualityGate abortPipeline: true
+                            }
+                        }
+
                         stage('Build') {
                             steps {
-                                dir('lesson26/app-Jenkins') {
+                                dir('lesson27/app-Jenkins') {
                                     sh 'mvn -B -DskipTests clean package'
                                 }
                             }
@@ -92,13 +130,13 @@ pipeline {
 
                         stage('Test') {
                             steps {
-                                dir('lesson26/app-Jenkins') {
+                                dir('lesson27/app-Jenkins') {
                                     sh 'mvn test'
                                 }
                             }
                             post {
                                 always {
-                                    junit "lesson26/app-Jenkins/target/surefire-reports/*.xml"
+                                    junit "lesson27/app-Jenkins/target/surefire-reports/*.xml"
                                 }
                             }
                         }
@@ -117,9 +155,28 @@ pipeline {
                         expression { return changedApps.contains("app-Devops") }
                     }
                     stages{
+                        // SonarQube анализирует код приложения
+                        stage('SonarQube Analysis') {
+                            steps {
+                                dir('lesson27/app-Devops') {
+                                    withSonarQubeEnv(credentialsId: 'sonar', installationName: 'SonarServer') {
+                                        sh "mvn clean verify sonar:sonar -Dsonar.projectKey=maven -Dsonar.projectName='maven'"
+                                    } 
+                                }
+                            }
+                        }
+
+                        // Quality Gate
+                        stage('SonarQube Quality Gate') {
+                            steps {
+                                sleep 60
+                                waitForQualityGate abortPipeline: true
+                            }
+                        }
+
                         stage('Build') {
                             steps {
-                                dir('lesson26/app-Devops') {
+                                dir('lesson27/app-Devops') {
                                     sh 'mvn -B -DskipTests clean package'
                                 }
                             }
@@ -127,13 +184,13 @@ pipeline {
 
                         stage('Test') {
                             steps {
-                                dir('lesson26/app-Devops') {
+                                dir('lesson27/app-Devops') {
                                     sh 'mvn test'
                                 }
                             }
                             post {
                                 always {
-                                    junit "lesson26/app-Devops/target/surefire-reports/*.xml"
+                                    junit "lesson27/app-Devops/target/surefire-reports/*.xml"
                                 }
                             }
                         }
