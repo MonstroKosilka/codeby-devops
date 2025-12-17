@@ -52,7 +52,7 @@ pipeline {
                             steps {
                                 dir('lesson27/app-World') {
                                     withSonarQubeEnv(credentialsId: 'sonar', installationName: 'SonarServer') {
-                                        sh "mvn clean verify sonar:sonar -Dsonar.projectKey=maven -Dsonar.projectName='maven'"
+                                        sh "mvn clean verify sonar:sonar -Dsonar.projectKey=maven-World -Dsonar.projectName='maven-World'"
                                     } 
                                 }
                             }
