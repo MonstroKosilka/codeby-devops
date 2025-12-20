@@ -4,7 +4,7 @@ on:
   push:
     branches: [ lesson28 ]
   pull_request:
-    branches: [lesson28]
+    branches: [ lesson28]
 
 jobs:
     build_and_test:
@@ -38,4 +38,4 @@ jobs:
         
         # Билдим приложения
         - name: Build project with Maven
-          run: mvn -B package --file ${{ matrix.app }}/pom.xml
+          run: mvn -B package --file lesson28/${{ matrix.app }}/pom.xml
