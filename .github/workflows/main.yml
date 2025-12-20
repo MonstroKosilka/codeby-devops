@@ -18,8 +18,8 @@ jobs:
                     - app-Devops
                     - app-Jenkins
 
-        # Делаем checkout 
         steps:
+        # Делаем checkout
         - uses: actions/checkout@v2
 
         # Ставим JAVA
@@ -43,3 +43,28 @@ jobs:
         # Тестируем приложения
         - name: Test app with maven
           run: mvn test --file lesson28/${{ matrix.app }}/pom.xml
+    
+    # Загружаем артефакты
+    publish-job:
+        runs-on: ubuntu-latest
+
+        strategy:
+            matrix:
+                app:
+                    - app-World
+                    - app-Devops
+                    - app-Jenkins
+
+
+        needs: [build_and_test]
+        steps:
+        - uses: actions/checkout@v2
+        - uses: actions/setup-java@v1
+          with:
+            java-version: 14
+        - run: mvn -B package -DskipTests --file lesson28/${{ matrix.app }}/pom.xml clean package
+        - run: mkdir staging && cp target/*jar-with-dependencies.jar staging
+        - uses: actions/upload-artifact@v4
+          with: 
+            name: Package-${{ matrix.app }}
+            path: staging
