@@ -1,0 +1,46 @@
+pipeline {
+    agent any
+    tools {
+        maven 'maven-3'
+    }
+
+    environment {
+        GITHUB_CRED = "github"
+        GITHUB_URL = "https://github.com/MonstroKosilka/app.git"
+        APP_DIR = 'app'
+    }
+
+    stages {
+        //stage('Checkout') {
+        //    steps {
+        //        git branch: 'main', changelog: false, credentialsId: env.GITHUB_CRED, poll: false, url: env.GITHUB_URL
+        //    }
+        //}
+        stage('Build') {
+            steps {
+                dir(env.APP_DIR) {
+                    sh 'mvn -B -DskipTests clean package'
+                }
+            }
+        }
+        stage('Test') {
+            steps {
+                dir(env.APP_DIR) {
+                    sh 'mvn test'
+                }
+            }
+            post {
+                always {
+                    junit "${env.APP_DIR}/target/surefire-reports/*.xml"
+                }
+            }
+        }
+        stage('Deliver') {
+            steps {
+                // sh 'chmod +x app/jenkins/scripts/deliver.sh'
+                // sh './app/jenkins/scripts/deliver.sh'
+                echo "DELIVER!!!"
+            }
+        }
+    }
+}
