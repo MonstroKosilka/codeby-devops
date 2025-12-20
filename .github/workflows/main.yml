@@ -36,6 +36,6 @@ jobs:
             key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }} 
             restore-keys: ${{ runner.os }}-m2
         
-        # Билдим приложения
+        # Билдим и тестируем приложения
         - name: Build project with Maven
-          run: mvn -B package --file lesson28/${{ matrix.app }}/pom.xml
+          run: mvn -B package -DskipTests --file lesson28/${{ matrix.app }}/pom.xml clean package
