@@ -63,7 +63,7 @@ jobs:
           with:
             java-version: 14
         - run: mvn -B package -DskipTests --file lesson28/${{ matrix.app }}/pom.xml clean package
-        - run: mkdir staging && cp lesson28/${{ matrix.app }}/target/*jar-with-dependencies.jar staging
+        - run: mkdir staging && cp lesson28/${{ matrix.app }}/target/*.jar staging
         - uses: actions/upload-artifact@v4
           with: 
             name: Package-${{ matrix.app }}
