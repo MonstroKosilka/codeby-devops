@@ -1,5 +1,6 @@
 name: Maven CI/CD Lesson28
 
+# Необходимо для добавления образов
 permissions:
   contents: read
   packages: write
@@ -73,6 +74,7 @@ jobs:
             name: Package-${{ matrix.app }}
             path: staging
     
+    # Создание докер образов
     docker-build-push:
         runs-on: ubuntu-latest
 
@@ -87,6 +89,7 @@ jobs:
         needs: [ build_and_test ] 
 
         steps:
+        # Чтобы без ошибок создавалась репа
         - name: Convert repository name to lowercase
           run: echo "REPO_LOWER=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
