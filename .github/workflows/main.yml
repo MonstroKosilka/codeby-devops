@@ -83,6 +83,9 @@ jobs:
         needs: [ build_and_test ] 
 
         steps:
+        - name: Convert repository name to lowercase
+          run: echo "REPO_LOWER=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
         - name: Convert app name to lowercase
           run: echo "APP_LOWER=$(echo '${{ matrix.app }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
         
@@ -97,7 +100,7 @@ jobs:
             password: ${{ secrets.GITHUB_TOKEN }}
 
         - name: Build Docker image
-          run: docker build -t ghcr.io/${{ github.repository }}_${{ env.APP_LOWER }}:latest lesson28/${{ matrix.app }}
+          run: docker build -t ghcr.io/${{ env.REPO_LOWER }}_${{ env.APP_LOWER }}:latest lesson28/${{ matrix.app }}
 
         - name: Push Docker image
-          run: docker push ghcr.io/${{ github.repository }}_${{ matrix.app }}:latest
+          run: docker push ghcr.io/${{ env.REPO_LOWER }}_${{ env.APP_LOWER }}:latest
