@@ -1,5 +1,9 @@
 name: Maven CI/CD Lesson28
 
+permissions:
+  contents: read
+  packages: write
+
 on:
   push:
     branches: [ lesson28 ]
