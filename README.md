@@ -27,3 +27,4 @@
 25. Continuous Integration
 26. Jenkins
 27. SonarQube
+28. GitHub Action
