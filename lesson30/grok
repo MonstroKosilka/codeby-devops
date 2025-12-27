@@ -1,0 +1,8 @@
+<filter service.ui>
+  @type parser
+  key_name log
+  <parse>
+    @type grok
+    grok_pattern %{DATA}, \[%{TIMESTAMP_ISO8601:timestamp} \#%{POSINT:pid}\] *%{DATA:loglevel} -- +%{DATA:progname}: service=%{DATA:service} \| event=%{DATA:event} \| request_id=%{DATA:request_id} \| message='%{DATA:messageui}' \| params: {"title":"%{DATA:title}","link":"%{DATA:link}"}
+  </parse>
+</filter>
