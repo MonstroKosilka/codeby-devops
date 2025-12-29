@@ -28,5 +28,5 @@
 26. Jenkins
 27. SonarQube
 28. GitHub Action
-
+29. Мониторинг
 30. Logging
