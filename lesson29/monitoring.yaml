@@ -1,0 +1,104 @@
+version: '3.3'
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus_data:/prometheus
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+    networks:
+      - monitornig
+
+  node-exporter:
+    image: quay.io/prometheus/node-exporter:latest
+    container_name: node_exporter
+    command:
+      - '--path.rootfs=/host'
+    pid: host
+    restart: unless-stopped
+    volumes:
+      - '/:/host:ro,rslave'
+    ports:
+      - '9100:9100'
+    networks:
+      - monitornig
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    privileged: true
+    volumes:
+      - '/:/rootfs:ro'
+      - '/var/run:/var/run:ro'
+      - '/sys:/sys:ro'
+      - '/var/lib/docker/:/var/lib/docker:ro'
+      - '/dev/disk/:/dev/disk:ro'
+    ports:
+      - '8080:8080'
+    networks:
+      - monitornig
+
+  grafana:
+    image: grafana/grafana-oss
+    container_name: grafana
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - grafana_data:/var/lib/grafana
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+    depends_on:
+      - prometheus
+    ports:
+      - 3000:3000
+    networks:
+      - monitornig
+  
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: alertmanager
+    volumes:
+      - ./alertmanager/config.yml:/etc/alertmanager/alertmanager.yml
+    command:
+      - "--config.file=/etc/alertmanager/alertmanager.yml"
+      - "--storage.path=/alertmanager"
+    ports:
+      - "9093:9093"
+    networks:
+      - monitornig
+
+  blackbox-exporter:
+    image: prom/blackbox-exporter:latest
+    volumes:
+      - ./blackbox/blackbox.yaml:/config/blackbox.yaml
+    command:
+      - '--config.file=/config/blackbox.yaml'
+    restart: unless-stopped
+    ports:
+      - "9115:9115"
+    networks:
+      - monitornig
+
+  # ab:
+  #   image: jordi/ab
+  #   container_name: ab
+  #   command:
+  #     - '-c 50'
+  #     - '-n 1000'
+  #     - 'http://ui:9292/'
+  #   networks:
+  #     - monitornig
+
+volumes:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  monitornig:
