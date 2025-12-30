@@ -30,3 +30,4 @@
 28. GitHub Action
 29. Мониторинг
 30. Logging
+31. Tracing
