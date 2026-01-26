@@ -1,0 +1,16 @@
+{{- if and .Values.prometheus.enabled .Values.prometheus.pvc.enabled -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: prometheus-data
+  namespace: {{ include "monitoring.ns" . }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  {{- if .Values.prometheus.pvc.storageClassName }}
+  storageClassName: {{ .Values.prometheus.pvc.storageClassName | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.prometheus.pvc.size }}
+{{- end -}}
