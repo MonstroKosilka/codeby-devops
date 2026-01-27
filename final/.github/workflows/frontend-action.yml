@@ -1,0 +1,276 @@
+name: Frontend (Разработка и доставка)
+
+permissions:
+  contents: read
+  packages: write
+
+on:
+  push:
+    branches: ["develop"]
+    paths:
+      - "frontend/**"
+      - ".github/workflows/frontend-action.yml"
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "frontend/**"
+      - ".github/workflows/frontend-action.yml"
+
+env:
+  IMAGE_NAME: frontend
+  DOCKERFILE: frontend/Dockerfile
+  CONTEXT_DIR: frontend
+  VERSION: 1.${{ github.run_number }}.0
+
+jobs:
+  test_frontend:
+    name: Test frontend (Node)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 
+        uses: actions/setup-node@v4
+        with:
+          node-version: "16"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Run tests
+        run: |
+          cd frontend
+          npm test --if-present
+
+  build_and_push:
+    name: Docker build & push (frontend)
+    needs: test_frontend
+    if: github.event_name == 'push' && github.ref_name == 'develop'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Repo name to lowercase
+        run: echo "REPO_LOWER=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+      - name: Set VERSION_TAG
+        run: echo "VERSION_TAG=${{ env.VERSION }}" >> $GITHUB_ENV
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & push (VERSION tag)
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ env.CONTEXT_DIR }}
+          file: ${{ env.DOCKERFILE }}
+          push: true
+          build-args: |
+            VUE_APP_API_URL=
+          tags: |
+            ghcr.io/${{ env.REPO_LOWER }}/${{ env.IMAGE_NAME }}:${{ env.VERSION_TAG }}
+
+      - name: Build & push (latest)
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ env.CONTEXT_DIR }}
+          file: ${{ env.DOCKERFILE }}
+          push: true
+          build-args: |
+            VUE_APP_API_URL=
+          tags: |
+            ghcr.io/${{ env.REPO_LOWER }}/${{ env.IMAGE_NAME }}:latest 
+  
+  helm_chart:
+    name: Helm chart (frontend)
+    runs-on: ubuntu-latest
+    container:
+      image: alpine/helm:4.0.4
+    permissions:
+      contents: read
+      packages: write
+    env:
+      REGISTRY: ghcr.io
+      CHART_PATH: infrastructure/helm/frontend
+      OWNER: ${{ github.repository_owner }}
+      CHART_NAME: frontend
+    needs: build_and_push
+    if: github.event_name == 'push' && github.ref_name == 'develop'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Owner to lowercase
+        run: echo "OWNER_LOWER=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+      - name: Login to GHCR
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login $REGISTRY \
+            --username ${{ github.actor }} \
+            --password-stdin
+
+      - name: Helm lint (strict)
+        run: helm lint $CHART_PATH --strict
+
+      - name: Package Helm Chart
+        run: |
+          helm package $CHART_PATH \
+            --version "${{ env.VERSION }}" \
+            --app-version "${{ env.VERSION }}" \
+            --destination dist
+
+      - name: Push Helm Chart to GHCR 
+        run: |
+          helm push dist/*.tgz oci://$REGISTRY/$OWNER_LOWER/helm
+
+  notify_telegram:
+    name: Notify Telegram (after build)
+    runs-on: ubuntu-latest
+    needs: helm_chart
+    if: github.event_name == 'push' && github.ref_name == 'develop'
+    steps:
+      - name: Notify Telegram
+        if: always()
+        env:
+          BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          MSG: |
+            ✅ ${{ github.workflow }} завершен
+            Репозиторий: ${{ github.repository }}
+            Ветка: ${{ github.ref_name }}
+            Автор: ${{ github.actor }}
+            Статус: ${{ job.status }}
+            Ссылка: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            Helm chart: https://github.com/orgs/${{ github.repository_owner }}/packages/container/package/helm%2Ffrontend
+
+            Подготовлена версия: ${{ env.VERSION }} сервиса frontend! Не забудьте установить переменную в окружении: https://github.com/MonstroKosilka/final/settings/environments/11498833788/edit
+        run: |
+          curl -sS -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+            --data-urlencode "chat_id=${CHAT_ID}" \
+            --data-urlencode "text=${MSG}" \
+            --data-urlencode "disable_web_page_preview=true"
+
+  notify_telegram_2:
+    name: Notify Telegram (PR -> main)
+    runs-on: ubuntu-latest
+    needs: test_frontend
+    if: github.event_name == 'pull_request' && github.base_ref == 'main'
+    steps:
+      - name: Notify Telegram
+        if: always()
+        env:
+          BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          MSG: |
+            ⏳ ${{ github.workflow }} ожидает ручного одобрения на DEPLOY
+            Репозиторий: ${{ github.repository }}
+            Ветка: ${{ github.ref_name }}
+            Автор: ${{ github.actor }}
+            Статус: ${{ job.status }}
+            Ссылка: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          curl -sS -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+            --data-urlencode "chat_id=${CHAT_ID}" \
+            --data-urlencode "text=${MSG}" \
+            --data-urlencode "disable_web_page_preview=true"
+          
+  deploy:
+    name: Deploy (only PR -> main)
+    runs-on: ubuntu-latest
+    container:
+      image: alpine/helm:4.0.4
+    permissions:
+      contents: read
+      packages: write
+      pull-requests: write
+      issues: write
+    env:
+      REGISTRY: ghcr.io
+      CHART_PATH: infrastructure/helm/frontend
+      OWNER: ${{ github.repository_owner }}
+      CHART_NAME: frontend
+    needs: notify_telegram_2
+    if: github.event_name == 'pull_request' && github.base_ref == 'main'
+    environment: deploy
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Owner to lowercase
+        run: echo "OWNER_LOWER=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+      - name: Login to GHCR
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login $REGISTRY \
+            --username ${{ github.actor }} \
+            --password-stdin
+      
+      - name: Restore kubeconfig
+        run: |
+          mkdir -p /tmp/kube
+          echo "${{ secrets.KUBECONFIG_B64 }}" | base64 -d > /tmp/kube/config
+          chmod 600 /tmp/kube/config
+          echo "KUBECONFIG=/tmp/kube/config" >> $GITHUB_ENV
+
+      - name: Show Helm chart frontend
+        run: |
+          helm show chart oci://ghcr.io/monstrokosilka/helm/frontend --version ${{ vars.FRONTEND_VERSION}}
+
+      - name: Deploy Helm chart from GHCR (OCI)
+        shell: sh
+        run: |
+          set -e
+          helm upgrade --install frontend \
+            oci://$REGISTRY/$OWNER_LOWER/helm/frontend \
+            --version "${{ vars.FRONTEND_VERSION }}" \
+            --set image.tag="${{ vars.FRONTEND_VERSION }}" \
+            --wait \
+            --timeout 3m \
+            2>&1 | tee helm_upgrade.log
+      
+      - name: Comment PR with Helm upgrade output
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+
+            let body = fs.readFileSync('helm_upgrade.log', 'utf8');
+
+            // ограничение размера комментария
+            const MAX = 60000;
+            if (body.length > MAX) {
+              body = '⚠️ Output truncated (last 60k chars)\n\n' + body.slice(body.length - MAX);
+            }
+
+            const comment = [
+              '<!-- helm-upgrade-output -->',
+              '### 🚀 Helm upgrade результат (frontend)',
+              `**Чарт:** \`oci://ghcr.io/${process.env.OWNER_LOWER}/helm/frontend\``,
+              `**Версия:** \`${process.env.FRONTEND_VERSION}\``,
+              '',
+              '```',
+              body.trimEnd(),
+              '```'
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: comment
+            });
+        env:
+          FRONTEND_VERSION: ${{ vars.FRONTEND_VERSION }}
+

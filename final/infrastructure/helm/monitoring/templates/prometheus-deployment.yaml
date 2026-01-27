@@ -1,0 +1,53 @@
+{{- if .Values.prometheus.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  namespace: {{ include "monitoring.ns" . }}
+  labels:
+    {{- include "monitoring.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.prometheus.replicas }}
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      securityContext:
+        fsGroup: 65534
+        fsGroupChangePolicy: "OnRootMismatch"
+
+      containers:
+        - name: prometheus
+          image: {{ .Values.prometheus.image | quote }}
+          args:
+            - --config.file=/etc/prometheus/prometheus.yml
+            - --storage.tsdb.path=/prometheus
+          ports:
+            - containerPort: 9090
+          securityContext:
+            runAsUser: 65534
+            runAsGroup: 65534
+
+          resources:
+            {{- toYaml .Values.prometheus.resources | nindent 12 }}
+          volumeMounts:
+            - name: prometheus-config
+              mountPath: /etc/prometheus
+            {{- if .Values.prometheus.pvc.enabled }}
+            - name: prometheus-data
+              mountPath: /prometheus
+            {{- end }}
+      volumes:
+        - name: prometheus-config
+          configMap:
+            name: prometheus-config
+        {{- if .Values.prometheus.pvc.enabled }}
+        - name: prometheus-data
+          persistentVolumeClaim:
+            claimName: prometheus-data
+        {{- end }}
+{{- end -}}
